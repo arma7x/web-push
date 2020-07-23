@@ -1,0 +1,32 @@
+{
+  "name": "Web Push",
+  "description": "A Web Push App app",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/icons/icon16x16.png",
+    "48": "/icons/icon48x48.png",
+    "60": "/icons/icon60x60.png",
+    "128": "/icons/icon128x128.png"
+  },
+  "developer": {
+    "name": "arma7x",
+    "url": "http://example.com"
+  },
+  "type": "privileged",
+  "permissions": {
+    "serviceworker": {
+      "description": "Needed for assocating service worker"
+    },
+    "desktop-notification": {
+      "description": "Required for displaying alerts when app is on background"
+    },
+    "push": {
+      "description": "To receive notifications"
+    }
+  },
+  "messages": [
+    {
+      "serviceworker-notification": "/index.html"
+    }
+  ]
+}

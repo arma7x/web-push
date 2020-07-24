@@ -12,6 +12,7 @@
     "name": "arma7x",
     "url": "http://example.com"
   },
+  "origin": "app://webpush.arma7x.com",
   "type": "privileged",
   "permissions": {
     "serviceworker": {

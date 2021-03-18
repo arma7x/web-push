@@ -1,3 +1,18 @@
+navigator.mozSetMessageHandler('serviceworker-notification', function(activityRequest) {
+  console.log('serviceworker-notification', activityRequest);
+  if (window.navigator.mozApps) {
+    var request = window.navigator.mozApps.getSelf();
+    request.onsuccess = function() {
+      if (request.result) {
+        request.result.launch();
+      }
+    };
+  } else {
+    window.open(document.location.origin, '_blank');
+  }
+});
+
+
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4)
   const base64 = (base64String + padding)

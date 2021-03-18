@@ -5,31 +5,30 @@ self.addEventListener('push', function(event) {
   const data = event.data.json()
   self.registration.showNotification(data.title || 'Default Title', {
     body: data.body || 'Default notification body',
+    requireInteraction: true,
+    actions: [{
+      action: "accept",
+      title: "Yes"
+    },{
+      action: "reject",
+      title: "No"
+    }]
   });
 });
 
 self.addEventListener('pushsubscriptionchange', function(event) {
   console.log('[SW] pushsubscriptionchange')
-  //self.registration.showNotification('pushsubscriptionchange', {
-  //  body: 'This is pushsubscriptionchange',
-  //});
 });
 
 self.addEventListener('install', function(event) {
   console.log('[SW] install')
   self.skipWaiting()
-  //self.registration.showNotification('install', {
-    //body: 'This is install',
-  //});
 });
 
 
 self.addEventListener('activate', function(event) {
   self.skipWaiting()
   console.log('[SW] activate')
-  //self.registration.showNotification('activate', {
-  //  body: 'This is activate',
-  //});
 });
 
 self.addEventListener('notificationclick', function(event) {

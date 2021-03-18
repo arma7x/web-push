@@ -27,6 +27,9 @@
   },
   "messages": [
     {
+      "push": "/index.html"
+    },
+    {
       "serviceworker-notification": "/index.html"
     }
   ]

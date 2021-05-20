@@ -11,8 +11,9 @@
 <body style="width:240px!important;">
   <div class="container" style="padding:10px;">
     <input tabIndex="0" id="title" type="text" placeholder="title" class="nav" style="margin:0 0 10px 0;"/>
-    <input tabIndex="1" id="body" type="text" placeholder="body" class="nav" style="margin:0 0 10px 0;" />
-    <button id="btn" class="trigger-push" onclick="triggerPushNotification()">Call to Push</button><br><br>
+    <input tabIndex="1" id="body" type="text" placeholder="body" class="nav" style="margin:0 0 10px 0;" maxlength="160" />
+    <button class="trigger-push" onclick="triggerPushNotification()">Call to Push</button><br><br>
+    <button class="trigger-push" onclick="subscribePushNotification()">SoftLeft to Sub</button><br><br>
     <textarea tabIndex="2" id="js-subscription-details" class="nav" rows="8" cols="18" readonly></textarea>
   </div>
 

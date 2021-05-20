@@ -1,18 +1,3 @@
-navigator.mozSetMessageHandler('serviceworker-notification', function(activityRequest) {
-  console.log('serviceworker-notification', activityRequest);
-  if (window.navigator.mozApps) {
-    var request = window.navigator.mozApps.getSelf();
-    request.onsuccess = function() {
-      if (request.result) {
-        request.result.launch();
-      }
-    };
-  } else {
-    window.open(document.location.origin, '_blank');
-  }
-});
-
-
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4)
   const base64 = (base64String + padding)
@@ -32,41 +17,52 @@ let swRegistration = null;
 
 const publicVapidKey = 'BEQKNRr93cvGQjWgT_7tYJ84J4-UZpZgfbd2pmom5ZRHoheLxZECOOu7112UV0b91R-l7UdhS07mRa-15FnfQVo'
 
-const triggerPush = document.querySelector('.trigger-push')
+let subscriptionObj = null;
 const subscriptionDetails = document.getElementById('js-subscription-details')
 subscriptionDetails.value = 'Hello'
 
-function triggerPushNotification() {
-  
-  subscriptionDetails.value = 'Please wait'
-
+function subscribePushNotification() {
+  subscriptionDetails.value = 'Subscribing'
   swRegistration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
   }).then(function(subscription) {
-    return fetch('https://kai-push-notification.herokuapp.com/subscribe', {
-      method: 'POST',
-      body: JSON.stringify({
-        'subscription': subscription,
-        'payload': {
-          title: document.getElementById('title').value !== "" ? document.getElementById('title').value : 'Push Notification',
-          body: document.getElementById('body').value !== "" ? document.getElementById('body').value : 'Push notifications with Service Workers',
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    subscriptionObj = subscription;
+    // console.log(subscriptionObj);
+    console.log(JSON.stringify(subscriptionObj));
+    subscriptionDetails.value = 'Subscribed'
+  })
+  .catch(function(error) {
+    subscriptionDetails.value =  error
+    console.log(error)
+  })
+}
+
+function triggerPushNotification() {
+
+  if (subscriptionObj == null) 
+    return
+  
+  subscriptionDetails.value = 'Please wait'
+
+  fetch('https://kai-push-notification.herokuapp.com/subscribe', {
+    method: 'POST',
+    body: JSON.stringify({
+      'subscription': subscriptionObj,
+      'payload': {
+        title: document.getElementById('title').value !== "" ? document.getElementById('title').value : 'Push Notification',
+        body: document.getElementById('body').value !== "" ? document.getElementById('body').value : 'Push notifications with Service Workers',
+      }
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
   .then(function(response) {
-    response.json()
-    .then(function(body) {
-      subscriptionDetails.value =  JSON.stringify(body)
-    })
-    .catch(function(err) {
-      subscriptionDetails.value =  err
-    })
-    
+    return response.json()
+  })
+  .then(function(body) {
+    subscriptionDetails.value =  JSON.stringify(body)
   })
   .catch(function(error) {
     subscriptionDetails.value =  error
@@ -96,14 +92,11 @@ function handleKeydown(e) {
     case 'ArrowDown':
       nav(1)
       break
-    //case 'ArrowRight':
-      //nav(1)
-      //break
-    //case 'ArrowLeft':
-      //nav(-1)
-      //break
     case "SoftRight":
       document.activeElement.blur()
+      break
+    case "SoftLeft":
+      subscribePushNotification()
       break
     case "BrowserBack":
     case "Backspace":
@@ -140,3 +133,17 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
   console.warn('Push messaging is not supported');
   pushButton.textContent = 'Push Not Supported';
 }
+
+navigator.mozSetMessageHandler('serviceworker-notification', function(activityRequest) {
+  console.log('serviceworker-notification', activityRequest);
+  if (window.navigator.mozApps) {
+    var request = window.navigator.mozApps.getSelf();
+    request.onsuccess = function() {
+      if (request.result) {
+        request.result.launch();
+      }
+    };
+  } else {
+    window.open(document.location.origin, '_blank');
+  }
+});

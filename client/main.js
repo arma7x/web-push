@@ -41,17 +41,24 @@ function unsubscribePushNotification() {
 
 function subscribePushNotification() {
   subscriptionDetails.value = 'Subscribing'
-  swRegistration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-  }).then(function(subscription) {
+  swRegistration.pushManager.getSubscription()
+  .then(function(subscription) {
+    if (!subscription) {
+      return swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+      });
+    } else {
+      return Promise.resolve(subscription);
+    }
+  })
+  .then(function(subscription) {
     subscriptionObj = subscription;
-    // console.log(subscriptionObj);
     console.log(JSON.stringify(subscriptionObj));
     subscriptionDetails.value = 'Subscribed'
   })
   .catch(function(error) {
-    subscriptionDetails.value =  error
+    subscriptionDetails.value =  error.toString();
     console.log(error)
   })
 }

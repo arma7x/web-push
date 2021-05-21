@@ -21,6 +21,24 @@ let subscriptionObj = null;
 const subscriptionDetails = document.getElementById('js-subscription-details')
 subscriptionDetails.value = 'Hello'
 
+function unsubscribePushNotification() {
+  subscriptionDetails.value = 'Unsubscribing'
+  swRegistration.pushManager.getSubscription()
+  .then(function(subscription) {
+    subscription.unsubscribe()
+    .then(function(successful) {
+      subscriptionObj = null;
+      subscriptionDetails.value = 'Unsubscribed'
+    }).catch(function(error) {
+      subscriptionDetails.value =  error.toString();
+      console.log(error)
+    })
+  }).catch(function(error) {
+    subscriptionDetails.value =  error.toString();
+    console.log(error)
+  })
+}
+
 function subscribePushNotification() {
   subscriptionDetails.value = 'Subscribing'
   swRegistration.pushManager.subscribe({
@@ -86,6 +104,9 @@ function nav (move) {
 
 function handleKeydown(e) {
   switch(e.key) {
+    case '0':
+      unsubscribePushNotification()
+      break
     case 'ArrowUp':
       nav(-1)
       break

@@ -7,11 +7,11 @@ self.addEventListener('push', function(event) {
     body: data.body || 'Default notification body',
     requireInteraction: true,
     actions: [{
-      action: "accept",
-      title: "Yes"
+      action: "open",
+      title: "Open"
     },{
-      action: "reject",
-      title: "No"
+      action: "ignore",
+      title: "Ignore"
     }]
   });
 });
@@ -34,19 +34,21 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('notificationclick', function(event) {
   console.log('[SW] notificationclick');
   event.notification.close();
-  event.waitUntil(clients.matchAll({
-    type: "window"
-  }).then(function(clientList) {
-    for (var i = 0; i < clientList.length; i++) {
-      var client = clientList[i];
-      if (client.url == '/' && 'focus' in client)
-        return client.focus();
-    }
-    if (clients.openWindow) {
-      return clients.openWindow('/');
-    }
-    if (clients.openApp) {
-      return clients.openApp();
-    }
-  }));
+  if (event.action === 'open') {
+    event.waitUntil(clients.matchAll({
+      type: "window"
+    }).then(function(clientList) {
+      for (var i = 0; i < clientList.length; i++) {
+        var client = clientList[i];
+        if (client.url == '/' && 'focus' in client)
+          return client.focus();
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
+      if (clients.openApp) {
+        return clients.openApp();
+      }
+    }));
+  }
 });

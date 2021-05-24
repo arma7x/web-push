@@ -111,9 +111,6 @@ function nav (move) {
 
 function handleKeydown(e) {
   switch(e.key) {
-    case '0':
-      unsubscribePushNotification()
-      break
     case 'ArrowUp':
       nav(-1)
       break
@@ -121,10 +118,10 @@ function handleKeydown(e) {
       nav(1)
       break
     case "SoftRight":
-      document.activeElement.blur()
+      subscribePushNotification()
       break
     case "SoftLeft":
-      subscribePushNotification()
+      unsubscribePushNotification()
       break
     case "BrowserBack":
     case "Backspace":
@@ -141,6 +138,7 @@ function handleKeydown(e) {
       }
       break
     case "Call":
+      document.activeElement.blur()
       triggerPushNotification()
       break
   }

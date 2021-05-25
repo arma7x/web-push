@@ -36,7 +36,6 @@ app.post('/subscribe', (req, res) => {
   setTimeout(() => {
     webPush.sendNotification(body.subscription, payload, {contentEncoding: encoding})
     .then((success) => {
-      console.log(success)
       res.status(success.statusCode).json(success)
     })
     .catch((error) => {
@@ -55,16 +54,15 @@ app.post('/push', (req, res) => {
 
   const encoding = body.encoding ? body.encoding : 'aesgcm'
 
-  const payload = body.payload ? JSON.stringify(body.payload) : JSON.stringify({
+  const payload = body.payload ? JSON.stringify(JSON.parse(body.payload)) : JSON.stringify({
     title: 'Push Notification',
     body: 'Push notifications with Service Workers',
   })
 
   webPush.setVapidDetails(subject, publicVapidKey, privateVapidKey)
 
-  webPush.sendNotification(body.subscription, payload, {contentEncoding: encoding})
+  webPush.sendNotification(JSON.parse(body.subscription), payload, {contentEncoding: encoding})
   .then((success) => {
-    console.log(success)
     res.status(success.statusCode).json(success)
   })
   .catch((error) => {

@@ -16,22 +16,22 @@ app.use(bodyParser.json())
 
 app.use(express.static(path.join(__dirname, 'client')))
 
-const subject = 'mailto:test@example.com'
+const subject = 'mailto:ahmadmuhamad101@gmail.com'
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY
-
-webPush.setVapidDetails(subject, publicVapidKey, privateVapidKey)
 
 app.post('/subscribe', (req, res) => {
 
   const body = req.body
 
-  const encoding = req.body.encoding ? req.body.encoding : 'aesgcm'
+  const encoding = body.encoding ? body.encoding : 'aesgcm'
 
-  const payload = req.body.payload ? JSON.stringify(req.body.payload) : JSON.stringify({
+  const payload = body.payload ? JSON.stringify(body.payload) : JSON.stringify({
     title: 'Push Notification',
     body: 'Push notifications with Service Workers',
   })
+
+  webPush.setVapidDetails(subject, publicVapidKey, privateVapidKey)
 
   setTimeout(() => {
     webPush.sendNotification(body.subscription, payload, {contentEncoding: encoding})
@@ -40,12 +40,36 @@ app.post('/subscribe', (req, res) => {
       res.status(success.statusCode).json(success)
     })
     .catch((error) => {
-      console.log('Subscription', body.subscription)
-      console.log('RequestDetails', webPush.generateRequestDetails(body.subscription, payload, {contentEncoding: 'aesgcm'}))
-      console.log('Error', error)
       res.status(error.statusCode).json(error)
     })
   }, 3000)
+})
+
+app.post('/push', (req, res) => {
+
+  const body = req.body
+
+  const publicVapidKey = body.publicVapidKey
+
+  const privateVapidKey = body.privateVapidKey
+
+  const encoding = body.encoding ? body.encoding : 'aesgcm'
+
+  const payload = body.payload ? JSON.stringify(body.payload) : JSON.stringify({
+    title: 'Push Notification',
+    body: 'Push notifications with Service Workers',
+  })
+
+  webPush.setVapidDetails(subject, publicVapidKey, privateVapidKey)
+
+  webPush.sendNotification(body.subscription, payload, {contentEncoding: encoding})
+  .then((success) => {
+    console.log(success)
+    res.status(success.statusCode).json(success)
+  })
+  .catch((error) => {
+    res.status(error.statusCode).json(error)
+  })
 })
 
 app.set('port', process.env.PORT || 5000)
